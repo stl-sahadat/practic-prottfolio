@@ -457,7 +457,7 @@ export const CorridorScene: React.FC<CorridorSceneProps> = ({
                 <CorridorDoor
                   key={`${door.roomId}-${segIndex}`}
                   roomId={door.roomId}
-                  position={[isLeft ? -3.75 : 3.75, 0.6, doorWorldZ]}
+                  position={[isLeft ? -3.75 : 3.75, 0.38, doorWorldZ]}
                   side={door.side}
                   sketchUrl={door.sketchUrl}
                   paintedUrl={door.paintedUrl}
