@@ -69,14 +69,17 @@ npm run preview
 
 ---
 
-## 🌐 Automatic Deployment
+## 🌐 GitHub Pages Live Hosting
 
-This repository includes a pre-configured GitHub Actions workflow (`.github/workflows/deploy.yml`) that automatically builds and deploys to **GitHub Pages** whenever changes are pushed to `main`.
+The production-ready build is compiled and published directly on the **`gh-pages`** branch.
 
-To verify GitHub Pages is active:
-1. Go to repository **Settings** > **Pages**.
-2. Under **Build and deployment** > **Source**, ensure **GitHub Actions** is selected.
-3. The site will be live at: **[https://stl-sahadat.github.io/practic-prottfolio/](https://stl-sahadat.github.io/practic-prottfolio/)**
+To enable GitHub Pages:
+1. Go to repository **[Settings > Pages](https://github.com/stl-sahadat/practic-prottfolio/settings/pages)**.
+2. Under **Build and deployment**:
+   - **Source**: Select **Deploy from a branch**
+   - **Branch**: Select **`gh-pages`** and folder **`/ (root)`**, then click **Save**.
+3. Your 3D Portfolio is live at:
+   👉 **[https://stl-sahadat.github.io/practic-prottfolio/](https://stl-sahadat.github.io/practic-prottfolio/)**
 
 ---
 
