@@ -15,6 +15,15 @@ interface CorridorDoorProps {
   isTransitioningRef: React.MutableRefObject<boolean>;
 }
 
+// Ensure asset URLs are reliably prefixed with base URL on subpath deployments (e.g. GitHub Pages)
+const resolveAsset = (path: string) => {
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+    return path;
+  }
+  const clean = path.replace(/^\//, '');
+  return `${import.meta.env.BASE_URL}${clean}`;
+};
+
 export const CorridorDoor: React.FC<CorridorDoorProps> = ({
   roomId,
   position,
@@ -34,7 +43,9 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
 
   const isLeft = side === 'left';
 
-  // Load door textures, signboard, back of door, and sketch arrows
+  const fontCabinBold = resolveAsset('fonts/CabinSketch-Bold.ttf');
+
+  // Load door textures, signboard, back of door, sketch arrows, and wall alcove
   const [
     frameTex,
     handleSketchTex,
@@ -45,16 +56,18 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
     signTex,
     arrowTex,
     thresholdTex,
+    wallTex,
   ] = useTexture([
-    '/textures/corridor/doors/ramkasingledoors.webp',
-    '/textures/corridor/doors/klamkadodrzwi.webp',
-    '/textures/corridor/doors/klamkadodrzwi_painted.webp',
-    sketchUrl,
-    paintedUrl,
-    '/textures/corridor/doors/backsingledoors.webp',
-    '/textures/corridor/pustatabliczka.webp',
-    '/textures/corridor/strzalka.webp',
-    '/textures/corridor/texturadoprogow.webp',
+    resolveAsset('textures/corridor/doors/ramkasingledoors.webp'),
+    resolveAsset('textures/corridor/doors/klamkadodrzwi.webp'),
+    resolveAsset('textures/corridor/doors/klamkadodrzwi_painted.webp'),
+    resolveAsset(sketchUrl),
+    resolveAsset(paintedUrl),
+    resolveAsset('textures/corridor/doors/backsingledoors.webp'),
+    resolveAsset('textures/corridor/pustatabliczka.webp'),
+    resolveAsset('textures/corridor/strzalka.webp'),
+    resolveAsset('textures/corridor/texturadoprogow.webp'),
+    resolveAsset('textures/corridor/wall_texture.webp'),
   ]);
 
   [
@@ -67,6 +80,7 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
     signTex,
     arrowTex,
     thresholdTex,
+    wallTex,
   ].forEach((t) => {
     if (t) t.colorSpace = THREE.SRGBColorSpace;
   });
@@ -85,24 +99,21 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
     const camZ = camera.position.z;
     const doorZ = position[2];
     const distZ = Math.abs(camZ - doorZ);
-    const isApproachingFromFront = camZ >= doorZ - 2.5;
 
-    // As user approaches from 18m away down to 3m:
+    // As user approaches from 16m away down to 3m:
     let targetAngle = 0.02;
-    if (isApproachingFromFront) {
-      if (distZ < 18 && distZ > 3.2) {
-        const t = (18 - distZ) / (18 - 3.2);
-        const eased = t * (2 - t);
-        targetAngle = 0.02 + 0.48 * eased; // ~28.6 degrees
-      } else if (distZ <= 3.2) {
-        targetAngle = 0.50; // Stands angled forward waiting for click!
-      }
+    if (distZ < 16 && distZ > 3.0) {
+      const t = (16 - distZ) / (16 - 3.0);
+      const eased = t * (2 - t);
+      targetAngle = 0.02 + 0.50 * eased; // ~30 degrees outward
+    } else if (distZ <= 3.0) {
+      targetAngle = 0.52; // Stands angled forward waiting for click!
     }
 
     currentAngleRef.current = THREE.MathUtils.damp(
       currentAngleRef.current,
       targetAngle,
-      8.0,
+      7.0,
       safeDelta
     );
 
@@ -254,9 +265,27 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
 
   return (
     <group position={position}>
-      {/* Dynamic Pivoting Doorway Group */}
+      {/* Dynamic Pivoting Doorway Alcove Group */}
       <group ref={pivotGroupRef} rotation={[0, isLeft ? Math.PI / 2 : -Math.PI / 2, 0]}>
         
+        {/* Authentic Sketch Wall Panel behind Door, Signboard & Arrows (Matching Image 2) */}
+        <mesh position={[0, 0.15, -0.015]}>
+          <planeGeometry args={[3.2, 3.8]} />
+          <meshBasicMaterial map={wallTex} color="#f7f5f0" side={THREE.DoubleSide} />
+        </mesh>
+
+        {/* Left Skirting Baseboard along Wall */}
+        <mesh position={[-1.15, -doorHeight * 0.5 - 0.05, 0.02]}>
+          <planeGeometry args={[0.85, 0.16]} />
+          <meshBasicMaterial map={thresholdTex} color="#ede8df" side={THREE.DoubleSide} />
+        </mesh>
+
+        {/* Right Skirting Baseboard along Wall */}
+        <mesh position={[1.15, -doorHeight * 0.5 - 0.05, 0.02]}>
+          <planeGeometry args={[0.85, 0.16]} />
+          <meshBasicMaterial map={thresholdTex} color="#ede8df" side={THREE.DoubleSide} />
+        </mesh>
+
         {/* Hand-Drawn Wooden Signboard above Door */}
         <group position={[0, doorHeight * 0.5 + 0.46, 0.06]}>
           {/* Wooden Board texture */}
@@ -269,26 +298,37 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
           {roomId === 'gallery' && (
             <group position={[0, 0, 0.02]}>
               <Text
-                font="/fonts/CabinSketch-Bold.ttf"
-                fontSize={0.23}
+                font={fontCabinBold}
+                fontSize={0.21}
                 color="#111111"
                 anchorX="center"
                 anchorY="bottom"
-                position={[0, 0.01, 0]}
+                position={[0, 0.05, 0]}
                 letterSpacing={0.02}
               >
                 THE
               </Text>
               <Text
-                font="/fonts/CabinSketch-Bold.ttf"
-                fontSize={0.23}
+                font={fontCabinBold}
+                fontSize={0.21}
                 color="#111111"
                 anchorX="center"
                 anchorY="top"
-                position={[0, 0.02, 0]}
+                position={[0, 0.04, 0]}
                 letterSpacing={0.04}
               >
                 GALLERY
+              </Text>
+              <Text
+                font={fontCabinBold}
+                fontSize={0.095}
+                color="#333333"
+                anchorX="center"
+                anchorY="top"
+                position={[0, -0.19, 0]}
+                letterSpacing={0.08}
+              >
+                • PROJECTS •
               </Text>
             </group>
           )}
@@ -296,26 +336,37 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
           {roomId === 'studio' && (
             <group position={[0, 0, 0.02]}>
               <Text
-                font="/fonts/CabinSketch-Bold.ttf"
-                fontSize={0.23}
+                font={fontCabinBold}
+                fontSize={0.21}
                 color="#111111"
                 anchorX="center"
                 anchorY="bottom"
-                position={[0, 0.01, 0]}
+                position={[0, 0.05, 0]}
                 letterSpacing={0.02}
               >
                 THE
               </Text>
               <Text
-                font="/fonts/CabinSketch-Bold.ttf"
-                fontSize={0.23}
+                font={fontCabinBold}
+                fontSize={0.21}
                 color="#111111"
                 anchorX="center"
                 anchorY="top"
-                position={[0, 0.02, 0]}
+                position={[0, 0.04, 0]}
                 letterSpacing={0.04}
               >
                 STUDIO
+              </Text>
+              <Text
+                font={fontCabinBold}
+                fontSize={0.09}
+                color="#333333"
+                anchorX="center"
+                anchorY="top"
+                position={[0, -0.19, 0]}
+                letterSpacing={0.08}
+              >
+                • MEDIA & LABS •
               </Text>
             </group>
           )}
@@ -323,15 +374,26 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
           {roomId === 'about' && (
             <group position={[0, 0, 0.02]}>
               <Text
-                font="/fonts/CabinSketch-Bold.ttf"
-                fontSize={0.26}
+                font={fontCabinBold}
+                fontSize={0.24}
                 color="#111111"
                 anchorX="center"
                 anchorY="middle"
-                position={[0, 0, 0]}
-                letterSpacing={0.05}
+                position={[0, 0.04, 0]}
+                letterSpacing={0.04}
               >
                 ABOUT ME
+              </Text>
+              <Text
+                font={fontCabinBold}
+                fontSize={0.09}
+                color="#333333"
+                anchorX="center"
+                anchorY="top"
+                position={[0, -0.15, 0]}
+                letterSpacing={0.08}
+              >
+                • MISSION & SKILLS •
               </Text>
             </group>
           )}
@@ -339,15 +401,26 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
           {roomId === 'contact' && (
             <group position={[0, 0, 0.02]}>
               <Text
-                font="/fonts/CabinSketch-Bold.ttf"
+                font={fontCabinBold}
                 fontSize={0.24}
                 color="#111111"
                 anchorX="center"
                 anchorY="middle"
-                position={[0, 0, 0]}
+                position={[0, 0.04, 0]}
                 letterSpacing={0.04}
               >
                 CONTACT
+              </Text>
+              <Text
+                font={fontCabinBold}
+                fontSize={0.09}
+                color="#333333"
+                anchorX="center"
+                anchorY="top"
+                position={[0, -0.15, 0]}
+                letterSpacing={0.08}
+              >
+                • GET IN TOUCH •
               </Text>
             </group>
           )}
@@ -381,7 +454,7 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
         {/* Room Cutout Interior Depth behind Door */}
         <mesh position={[0, 0, -0.01]}>
           <planeGeometry args={[doorWidth * 0.98, doorHeight * 0.98]} />
-          <meshBasicMaterial color="#1f1e1c" side={THREE.DoubleSide} />
+          <meshBasicMaterial color="#1a1918" side={THREE.DoubleSide} />
         </mesh>
 
         {/* Wooden Threshold on Floor */}
