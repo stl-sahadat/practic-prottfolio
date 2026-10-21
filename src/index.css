@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #f7f5f0;
+    background-image: url('/textures/paper-texture.webp');
+    background-repeat: repeat;
+    color: #1e1e1e;
+    font-family: 'Inter', sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-sketch {
+    font-family: 'Gloria Hallelujah', cursive;
+  }
+
+  .font-hand {
+    font-family: 'Caveat', cursive;
+  }
+}
+
+/* Paper card styling */
+.sketch-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 2px solid #232323;
+  box-shadow: 4px 4px 0px #232323;
+  border-radius: 4px 12px 6px 14px;
+}
+
+.sketch-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #232323;
+}
+
+.sketch-btn {
+  background: #fff;
+  border: 2px solid #1c1c1c;
+  box-shadow: 3px 3px 0px #1c1c1c;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.sketch-btn:hover {
+  background: #ffe873;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #1c1c1c;
+}
+
+.sketch-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #1c1c1c;
+}
+
+/* Canvas viewport */
+canvas {
+  touch-action: none;
+}
