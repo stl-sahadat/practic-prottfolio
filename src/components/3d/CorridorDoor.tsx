@@ -299,25 +299,14 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
             <group position={[0, 0, 0.02]}>
               <Text
                 font={fontCabinBold}
-                fontSize={0.21}
+                fontSize={0.22}
                 color="#111111"
                 anchorX="center"
-                anchorY="bottom"
-                position={[0, 0.05, 0]}
-                letterSpacing={0.02}
-              >
-                THE
-              </Text>
-              <Text
-                font={fontCabinBold}
-                fontSize={0.21}
-                color="#111111"
-                anchorX="center"
-                anchorY="top"
+                anchorY="middle"
                 position={[0, 0.04, 0]}
                 letterSpacing={0.04}
               >
-                GALLERY
+                PROJECTS
               </Text>
               <Text
                 font={fontCabinBold}
@@ -325,10 +314,10 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
                 color="#333333"
                 anchorX="center"
                 anchorY="top"
-                position={[0, -0.19, 0]}
+                position={[0, -0.15, 0]}
                 letterSpacing={0.08}
               >
-                • PROJECTS •
+                • THE GALLERY •
               </Text>
             </group>
           )}
@@ -480,6 +469,48 @@ export const CorridorDoor: React.FC<CorridorDoorProps> = ({
               side={THREE.DoubleSide}
             />
           </mesh>
+
+          {/* Taped Hand-Drawn Blueprint Card on Door Leaf */}
+          <group position={[meshOffsetX * 0.95, 0.42, 0.02]} rotation={[0, 0, isLeft ? -0.04 : 0.04]}>
+            <mesh>
+              <planeGeometry args={[0.58, 0.34]} />
+              <meshBasicMaterial color="#fcfbf7" side={THREE.DoubleSide} />
+            </mesh>
+            <Text
+              font={fontCabinBold}
+              fontSize={0.062}
+              color="#111111"
+              anchorX="center"
+              anchorY="middle"
+              position={[0, 0.02, 0.01]}
+              letterSpacing={0.03}
+            >
+              {roomId === 'gallery'
+                ? '18 PROJECTS'
+                : roomId === 'studio'
+                ? 'AI SWARMS'
+                : roomId === 'about'
+                ? 'ABOUT SAHADAT'
+                : 'LET\'S CONNECT'}
+            </Text>
+            <Text
+              font={fontCabinBold}
+              fontSize={0.038}
+              color="#555555"
+              anchorX="center"
+              anchorY="top"
+              position={[0, -0.05, 0.01]}
+              letterSpacing={0.02}
+            >
+              {roomId === 'gallery'
+                ? '• TAP TO ENTER •'
+                : roomId === 'studio'
+                ? '• TELEMETRY NODE •'
+                : roomId === 'about'
+                ? '• SYSTEMS ARCHITECT •'
+                : '• MESSAGE INBOX •'}
+            </Text>
+          </group>
 
           {/* Back Door Face (seen when door swings open) */}
           <mesh

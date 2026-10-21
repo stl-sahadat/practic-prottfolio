@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { portfolioData } from '../../data/portfolioData';
 import { soundManager } from '../../utils/sound';
 import { ChevronLeft, ChevronRight, ExternalLink, Github, RotateCw } from 'lucide-react';
+import { assetUrl } from '../../utils/assets';
 
 interface GalleryRoomProps {
   onBack: () => void;
@@ -10,12 +11,12 @@ interface GalleryRoomProps {
 // Map tech names to authentic logo textures
 const getTechLogo = (tech: string) => {
   const lower = tech.toLowerCase();
-  if (lower.includes('react')) return '/textures/gallery/reactlogo_painted.webp';
-  if (lower.includes('tailwind')) return '/textures/gallery/tailwindlogo_painted.webp';
-  if (lower.includes('js') || lower.includes('javascript') || lower.includes('vite')) return '/textures/gallery/jslogo_painted.webp';
-  if (lower.includes('html')) return '/textures/gallery/htmllogo_painted.webp';
-  if (lower.includes('css')) return '/textures/gallery/csslogo_painted.webp';
-  if (lower.includes('cloud') || lower.includes('firebase')) return '/textures/gallery/firebaselogo_painted.webp';
+  if (lower.includes('react')) return assetUrl('/textures/gallery/reactlogo_painted.webp');
+  if (lower.includes('tailwind')) return assetUrl('/textures/gallery/tailwindlogo_painted.webp');
+  if (lower.includes('js') || lower.includes('javascript') || lower.includes('vite')) return assetUrl('/textures/gallery/jslogo_painted.webp');
+  if (lower.includes('html')) return assetUrl('/textures/gallery/htmllogo_painted.webp');
+  if (lower.includes('css')) return assetUrl('/textures/gallery/csslogo_painted.webp');
+  if (lower.includes('cloud') || lower.includes('firebase')) return assetUrl('/textures/gallery/firebaselogo_painted.webp');
   return null;
 };
 
@@ -49,24 +50,26 @@ export const GalleryRoom: React.FC<GalleryRoomProps> = ({ onBack }) => {
   useEffect(() => {
     let lastWheelTime = 0;
     const handleWheel = (e: WheelEvent) => {
-      // Pulling mouse wheel backward (positive deltaY)
-      if (e.deltaY > 35 && Date.now() - lastWheelTime > 500) {
+      if (Math.abs(e.deltaY) > 20 && Date.now() - lastWheelTime > 220) {
         lastWheelTime = Date.now();
-        soundManager.playDoorClose();
-        onBack();
+        if (e.deltaY > 0) {
+          nextProject();
+        } else {
+          prevProject();
+        }
       }
     };
 
-    let startY = 0;
+    let startX = 0;
     const handlePointerDown = (e: PointerEvent) => {
-      startY = e.clientY;
+      startX = e.clientX;
     };
     const handlePointerUp = (e: PointerEvent) => {
-      const deltaY = e.clientY - startY;
-      // Dragging backwards/downwards > 60px
-      if (deltaY > 60) {
-        soundManager.playDoorClose();
-        onBack();
+      const deltaX = e.clientX - startX;
+      if (deltaX > 50) {
+        prevProject();
+      } else if (deltaX < -50) {
+        nextProject();
       }
     };
 
@@ -79,7 +82,7 @@ export const GalleryRoom: React.FC<GalleryRoomProps> = ({ onBack }) => {
         e.preventDefault();
         const activeProj = projects[currentIndex];
         if (activeProj) toggleFlip(activeProj.id);
-      } else if (e.key === 'Escape' || e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+      } else if (e.key === 'Escape') {
         soundManager.playDoorClose();
         onBack();
       }
@@ -103,24 +106,24 @@ export const GalleryRoom: React.FC<GalleryRoomProps> = ({ onBack }) => {
       {/* Background paper texture & hand-drawn city skyline */}
       <div
         className="absolute inset-0 opacity-15 pointer-events-none bg-repeat"
-        style={{ backgroundImage: `url('/textures/paper-texture.webp')` }}
+        style={{ backgroundImage: `url('${assetUrl('/textures/paper-texture.webp')}')` }}
       />
       {/* Authentic Wooden Herringbone Parquet Floor */}
       <div
         className="absolute bottom-0 left-0 right-0 h-32 bg-repeat-x opacity-35 pointer-events-none z-10"
-        style={{ backgroundImage: `url('/textures/gallery/floor.webp')`, backgroundSize: '280px auto' }}
+        style={{ backgroundImage: `url('${assetUrl('/textures/gallery/floor.webp')}')`, backgroundSize: '280px auto' }}
       />
       <div
         className="absolute bottom-0 left-0 right-0 h-64 bg-repeat-x opacity-20 pointer-events-none"
-        style={{ backgroundImage: `url('/textures/gallery/miastotlo.webp')`, backgroundSize: 'contain' }}
+        style={{ backgroundImage: `url('${assetUrl('/textures/gallery/miastotlo.webp')}')`, backgroundSize: 'contain' }}
       />
       <div
         className="absolute bottom-0 left-0 right-0 h-16 bg-repeat-x opacity-25 pointer-events-none z-10"
-        style={{ backgroundImage: `url('/textures/gallery/railing.webp')`, backgroundSize: 'contain' }}
+        style={{ backgroundImage: `url('${assetUrl('/textures/gallery/railing.webp')}')`, backgroundSize: 'contain' }}
       />
 
-      {/* Top Header: Clean & Minimalist */}
-      <div className="relative z-20 px-6 sm:px-10 py-5 flex items-center justify-between">
+      {/* Top Header */}
+      <div className="relative z-20 px-6 sm:px-10 py-5 flex items-center justify-between border-b border-black/10 bg-white/40 backdrop-blur-sm">
         <button
           onClick={() => {
             soundManager.playDoorClose();
@@ -131,7 +134,12 @@ export const GalleryRoom: React.FC<GalleryRoomProps> = ({ onBack }) => {
           <span>← Back to Corridor</span>
         </button>
 
-        <div />
+        <div className="text-right">
+          <h2 className="font-sketch text-xl sm:text-2xl text-black">THE GALLERY</h2>
+          <p className="font-hand text-xs sm:text-sm text-slate-600 -mt-0.5">
+            18 Featured Projects • Scroll wheel or use arrows to explore
+          </p>
+        </div>
       </div>
 
       {/* Center Stage: Clothesline with Hanging Project Cards */}
@@ -190,7 +198,7 @@ export const GalleryRoom: React.FC<GalleryRoomProps> = ({ onBack }) => {
                 {/* Authentic Wooden Peg Clip at Top of Card */}
                 <div className="absolute -top-7 left-1/2 -translate-x-1/2 w-9 h-14 z-40 pointer-events-none drop-shadow-md">
                   <img
-                    src="/textures/gallery/klamerka.webp"
+                    src={assetUrl('/textures/gallery/klamerka.webp')}
                     alt="Wooden Peg"
                     className="w-full h-full object-contain"
                   />
@@ -270,7 +278,7 @@ export const GalleryRoom: React.FC<GalleryRoomProps> = ({ onBack }) => {
                         backfaceVisibility: 'hidden',
                         WebkitBackfaceVisibility: 'hidden',
                         transform: 'rotateY(180deg)',
-                        backgroundImage: `url('/textures/gallery/tylkartki_painted.webp')`,
+                        backgroundImage: `url('${assetUrl('/textures/gallery/tylkartki_painted.webp')}')`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundColor: '#fbf9f4',
@@ -361,11 +369,11 @@ export const GalleryRoom: React.FC<GalleryRoomProps> = ({ onBack }) => {
                             className="relative inline-block w-40 h-10 hover:scale-105 transition-transform"
                           >
                             <img
-                              src={
+                              src={assetUrl(
                                 btnHovered
                                   ? '/textures/gallery/przyciskdotylukartki_painted.webp'
                                   : '/textures/gallery/przyciskdotylukartki.webp'
-                              }
+                              )}
                               alt="Visit Project"
                               className="w-full h-full object-contain"
                             />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { portfolioData } from '../../data/portfolioData';
 import { soundManager } from '../../utils/sound';
+import { assetUrl } from '../../utils/assets';
 import { sendContactMessage } from '../../services/contactService';
 import confetti from 'canvas-confetti';
 import {
@@ -34,47 +35,18 @@ export const ContactRoom: React.FC<ContactRoomProps> = ({ onBack }) => {
   const [submitted, setSubmitted] = useState(false);
   const [successInfo, setSuccessInfo] = useState<string>('');
 
-  // Mouse backward pull, drag, and keyboard navigation to exit back to corridor
+  // Keyboard navigation to exit back to corridor
   React.useEffect(() => {
-    let lastWheelTime = 0;
-    const handleWheel = (e: WheelEvent) => {
-      // Pulling mouse wheel backward/down (positive deltaY)
-      if (e.deltaY > 40 && Date.now() - lastWheelTime > 500) {
-        lastWheelTime = Date.now();
-        soundManager.playDoorClose();
-        onBack();
-      }
-    };
-
-    let startY = 0;
-    const handlePointerDown = (e: PointerEvent) => {
-      startY = e.clientY;
-    };
-    const handlePointerUp = (e: PointerEvent) => {
-      const deltaY = e.clientY - startY;
-      if (deltaY > 60) {
-        soundManager.playDoorClose();
-        onBack();
-      }
-    };
-
     const handleKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.key === 'Escape' || e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+      if (e.key === 'Escape') {
         soundManager.playDoorClose();
         onBack();
       }
     };
 
-    window.addEventListener('wheel', handleWheel, { passive: true });
-    window.addEventListener('pointerdown', handlePointerDown);
-    window.addEventListener('pointerup', handlePointerUp);
     window.addEventListener('keydown', handleKey);
-
     return () => {
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('pointerup', handlePointerUp);
       window.removeEventListener('keydown', handleKey);
     };
   }, [onBack]);
@@ -131,7 +103,18 @@ export const ContactRoom: React.FC<ContactRoomProps> = ({ onBack }) => {
     <div className="fixed inset-0 z-40 bg-[#f7f5f0] flex flex-col justify-between overflow-y-auto">
       <div
         className="fixed inset-0 opacity-15 pointer-events-none bg-repeat"
-        style={{ backgroundImage: `url('/textures/paper-texture.webp')` }}
+        style={{ backgroundImage: `url('${assetUrl('/textures/paper-texture.webp')}')` }}
+      />
+      {/* Hand-drawn Seaside Lighthouse & Sailboat Silhouette */}
+      <img
+        src={assetUrl('/textures/contact/latarnia.webp')}
+        alt=""
+        className="fixed -bottom-10 right-4 w-40 sm:w-56 opacity-15 pointer-events-none select-none z-0"
+      />
+      <img
+        src={assetUrl('/textures/contact/statek.webp')}
+        alt=""
+        className="fixed top-24 right-12 w-28 sm:w-40 opacity-10 pointer-events-none select-none z-0"
       />
 
       {/* Header */}

@@ -9,6 +9,7 @@ import { ContactRoom } from './components/rooms/ContactRoom';
 import { PaperUI, ViewMode } from './components/ui/PaperUI';
 import { InkCursorTrail } from './components/ui/InkCursorTrail';
 import { soundManager } from './utils/sound';
+import { assetUrl } from './utils/assets';
 
 export const App: React.FC = () => {
   // Website starts directly at the hand-drawn Entrance Scene (or respects ?view= URL query param)
@@ -100,7 +101,7 @@ export const App: React.FC = () => {
         className={`absolute inset-0 pointer-events-none z-10 bg-repeat transition-opacity duration-500 ${
           isBlueprint ? 'opacity-25 mix-blend-screen' : 'opacity-15'
         }`}
-        style={{ backgroundImage: `url('/textures/paper-texture.webp')` }}
+        style={{ backgroundImage: `url('${assetUrl('/textures/paper-texture.webp')}')` }}
       />
 
       {/* Blueprint Grid Lines Overlay (Only active in Blueprint Mode) */}

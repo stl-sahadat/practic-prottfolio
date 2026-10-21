@@ -1,6 +1,7 @@
 import React from 'react';
 import { portfolioData } from '../../data/portfolioData';
 import { soundManager } from '../../utils/sound';
+import { assetUrl } from '../../utils/assets';
 import { Award, Compass, Plane, CheckCircle2, UserCheck } from 'lucide-react';
 
 interface AboutRoomProps {
@@ -10,46 +11,17 @@ interface AboutRoomProps {
 export const AboutRoom: React.FC<AboutRoomProps> = ({ onBack }) => {
   const { personal, process, education } = portfolioData;
 
-  // Mouse backward pull, drag, and keyboard navigation to exit back to corridor
+  // Keyboard navigation to exit back to corridor
   React.useEffect(() => {
-    let lastWheelTime = 0;
-    const handleWheel = (e: WheelEvent) => {
-      // Pulling mouse wheel backward/down (positive deltaY)
-      if (e.deltaY > 40 && Date.now() - lastWheelTime > 500) {
-        lastWheelTime = Date.now();
-        soundManager.playDoorClose();
-        onBack();
-      }
-    };
-
-    let startY = 0;
-    const handlePointerDown = (e: PointerEvent) => {
-      startY = e.clientY;
-    };
-    const handlePointerUp = (e: PointerEvent) => {
-      const deltaY = e.clientY - startY;
-      if (deltaY > 60) {
-        soundManager.playDoorClose();
-        onBack();
-      }
-    };
-
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' || e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+      if (e.key === 'Escape') {
         soundManager.playDoorClose();
         onBack();
       }
     };
 
-    window.addEventListener('wheel', handleWheel, { passive: true });
-    window.addEventListener('pointerdown', handlePointerDown);
-    window.addEventListener('pointerup', handlePointerUp);
     window.addEventListener('keydown', handleKey);
-
     return () => {
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('pointerup', handlePointerUp);
       window.removeEventListener('keydown', handleKey);
     };
   }, [onBack]);
@@ -58,7 +30,7 @@ export const AboutRoom: React.FC<AboutRoomProps> = ({ onBack }) => {
     <div className="fixed inset-0 z-40 bg-[#f7f5f0] flex flex-col justify-between overflow-y-auto">
       <div
         className="fixed inset-0 opacity-15 pointer-events-none bg-repeat"
-        style={{ backgroundImage: `url('/textures/paper-texture.webp')` }}
+        style={{ backgroundImage: `url('${assetUrl('/textures/paper-texture.webp')}')` }}
       />
 
       {/* Header */}
@@ -92,7 +64,7 @@ export const AboutRoom: React.FC<AboutRoomProps> = ({ onBack }) => {
           <div className="md:col-span-4 flex justify-center">
             <div className="w-48 h-48 rounded-lg border-2 border-black overflow-hidden shadow-[4px_4px_0px_#000] bg-slate-100 rotate-[-2deg]">
               <img
-                src="/images/avatar-hero.png"
+                src={assetUrl('/images/avatar-hero.png')}
                 alt="Md Sahadat Hossain"
                 className="w-full h-full object-cover"
                 onError={(e) => {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Volume2, VolumeX, Trophy, Map as MapIcon, X, ArrowLeft, Palette } from 'lucide-react';
 import { soundManager } from '../../utils/sound';
+import { assetUrl } from '../../utils/assets';
 
 export type ViewMode = 'entrance' | 'corridor' | 'gallery' | 'studio' | 'about' | 'contact';
 
@@ -175,7 +176,7 @@ export const PaperUI: React.FC<PaperUIProps> = ({
             {/* Map Sheet Container */}
             <div className="relative w-full aspect-[4/3] rounded-lg border-2 border-black overflow-hidden bg-white shadow-inner">
               <img
-                src="/images/map.webp"
+                src={assetUrl('/images/map.webp')}
                 alt="Corridor Map"
                 className="w-full h-full object-cover select-none"
               />
@@ -183,28 +184,28 @@ export const PaperUI: React.FC<PaperUIProps> = ({
               {/* Painted Reveal Layers */}
               {hoveredRoom === 'about' && (
                 <img
-                  src="/images/map_about_painted.webp"
+                  src={assetUrl('/images/map_about_painted.webp')}
                   alt="About Painted"
                   className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
                 />
               )}
               {hoveredRoom === 'gallery' && (
                 <img
-                  src="/images/map_gallery_painted.webp"
+                  src={assetUrl('/images/map_gallery_painted.webp')}
                   alt="Gallery Painted"
                   className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
                 />
               )}
               {hoveredRoom === 'contact' && (
                 <img
-                  src="/images/map_contact_painted.webp"
+                  src={assetUrl('/images/map_contact_painted.webp')}
                   alt="Contact Painted"
                   className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
                 />
               )}
               {hoveredRoom === 'studio' && (
                 <img
-                  src="/images/map_studio_painted.webp"
+                  src={assetUrl('/images/map_studio_painted.webp')}
                   alt="Studio Painted"
                   className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
                 />
