@@ -8,7 +8,14 @@ import './index.css';
 const baseUrl = import.meta.env.BASE_URL;
 if (baseUrl && baseUrl !== '/') {
   THREE.DefaultLoadingManager.setURLModifier((url) => {
-    if (url.startsWith('/textures/') || url.startsWith('/sounds/') || url.startsWith('/audio/') || url.startsWith('/models/')) {
+    if (
+      url.startsWith('/textures/') ||
+      url.startsWith('/sounds/') ||
+      url.startsWith('/audio/') ||
+      url.startsWith('/models/') ||
+      url.startsWith('/fonts/') ||
+      url.startsWith('/images/')
+    ) {
       return `${baseUrl}${url.slice(1)}`;
     }
     return url;
